@@ -1,0 +1,132 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 18, 2025
+.Dt CK.FIFO 3lua
+.Os
+.Sh NAME
+.Nm ck.fifo
+.Nm ck.fifo.mpmc
+.Nm ck.fifo.spsc
+.Nd Lua bindings for Concurrency Kit lock-free SPSC and MPMP FIFO queues
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Ed
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv spscref = ck.fifo.spsc.new( )
+.It Dv spscref = ck.fifo.spsc.retain(cookie )
+.It Dv cookie = spscref:cookie( )
+.It Dv spscref:enqueue(value )
+.It Dv dequeued, value = spscref:dequeue( )
+.It Dv empty = spscref:isempty( )
+.It Dv acquired = spscref:enqueue_trylock( )
+.It Dv spscref:enqueue_lock( )
+.It Dv spscref:enqueue_unlock( )
+.It Dv acquired = spscref:dequeue_trylock( )
+.It Dv spscref:dequeue_lock( )
+.It Dv spscref:dequeue_unlock( )
+.It Dv mpmcref = ck.fifo.mpmc.new( )
+.It Dv mpmcref = ck.fifo.mpmc.retain(cookie )
+.It Dv cookie = mpmcref:cookie( )
+.It Dv mpmcref:enqueue(value )
+.It Dv enqueued = mpmcref:tryenqueue(value )
+.It Dv dequeued, value = mpmcref:dequeue( )
+.It Dv dequeued, value = mpmcref:trydequeue( )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.fifo
+submodule implements lock-free first-in, first-out
+.Pq FIFO
+queues for single-producer/single-consumer
+.Pq SPSC
+and multiple-producer/multiple-consumer
+.Pq MPMP
+scenarios.
+These queues provide a safe and efficient mechanism for passing values between
+threads without requiring external synchronization.
+.Pp
+For detailed explanations of lifetime management, reference semantics,
+shared-memory usage, and serialization/deserialization of values, see
+.Xr ck 3lua .
+.Bl -tag -width XXXX
+.It Dv spscref = ck.fifo.spsc.new( )
+Allocate and initialize a new reference-counted FIFO queue for SPSC usage.
+The returned object is a reference to the queue.
+The queue itself is allocated from the heap, independent of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv spscref = ck.fifo.spsc.retain(cookie )
+Retain a reference to an existing FIFO queue for SPSC usage, referring to the
+queue that produced
+.Fa cookie .
+.It Dv cookie = spscref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+queue referred to by
+.Va spscref .
+The cookie itself does not constitue a reference.
+.It Dv spscref:enqueue(value )
+Wraps
+.Fn ck_fifo_spsc_enqueue .
+.It Dv dequeued, value = spscref:dequeue( )
+Wraps
+.Fn ck_fifo_spsc_dequeue .
+.It Dv empty = spscref:isempty( )
+Wraps
+.Fn ck_fifo_spsc_isempty .
+.It Dv acquired = spscref:enqueue_trylock( )
+Wraps
+.Fn ck_fifo_spsc_enqueue_trylock .
+.It Dv spscref:enqueue_lock( )
+Wraps
+.Fn ck_fifo_spsc_enqueue_lock .
+.It Dv spscref:enqueue_unlock( )
+Wraps
+.Fn ck_fifo_spsc_enqueue_unlock .
+.It Dv acquired = spscref:dequeue_trylock( )
+Wraps
+.Fn ck_fifo_spsc_dequeue_trylock .
+.It Dv spscref:dequeue_lock( )
+Wraps
+.Fn ck_fifo_spsc_dequeue_lock .
+.It Dv spscref:dequeue_unlock( )
+Wraps
+.Fn ck_fifo_spsc_dequeue_unlock .
+.It Dv mpmcref = ck.fifo.mpmc.new( )
+Allocate and initialize a new reference-counted FIFO queue for MPMC usage.
+The returned object is a reference to the queue.
+The queue itself is allocated from the heap, independent of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv mpmcref = ck.fifo.mpmc.retain(cookie )
+Retain a reference to an existing FIFO queue for MPMC usage, referring to the
+queue that produced
+.Fa cookie .
+.It Dv cookie = mpmcref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+queue referred to by
+.Va mpmcref .
+The cookie itself does not constitue a reference.
+.It Dv mpmcref:enqueue(value )
+Wraps
+.Fn ck_fifo_mpmc_enqueue .
+.It Dv enqueued = mpmcref:tryenqueue(value )
+Wraps
+.Fn ck_fifo_mpmc_tryenqueue .
+.It Dv dequeued, value = mpmcref:dequeue( )
+Wraps
+.Fn ck_fifo_mpmc_dequeue .
+.It Dv dequeued, value = mpmcref:trydequeue( )
+Wraps
+.Fn ck_fifo_mpmc_trydequeue .
+.El
+.Sh SEE ALSO
+.Xr ck 3lua
+.Sh AUTHORS
+.An Ryan Moeller

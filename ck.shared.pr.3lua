@@ -1,0 +1,150 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 18, 2025
+.Dt CK.SHARED.PR 3lua
+.Os
+.Sh NAME
+.Nm ck.shared.pr
+.Nd Lua bindings for Concurrency Kit atomic primitives on shared values
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Ed
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv prref = ck.shared.pr.new(value )
+.It Dv prref = ck.shared.pr.retain(cookie )
+.It Dv cookie = prref:cookie( )
+.It Dv prref:add(delta )
+.It Dv prref:and(delta )
+.It Dv bit_value = prref:btc(bit_index )
+.It Dv bit_value = prref:btr(bit_index )
+.It Dv bit_value = prref:bts(bit_index )
+.It Dv modified = prref:cas(old_value, new_value )
+.It Dv modified, original_value = prref:cas_value(old_value, new_value )
+.It Dv prref:dec( )
+.It Dv zero = prref:dec_is_zero( )
+.It Dv original_value = prref:faa(delta )
+.It Dv original_value = prref:fas(new_value )
+.It Dv prref:inc( )
+.It Dv zero = prref:inc_is_zero( )
+.It Dv value = prref:load( )
+.It Dv prref:neg( )
+.It Dv zero = prref:neg_is_zero( )
+.It Dv prref:not( )
+.It Dv prref:or(delta )
+.It Dv prref:rfo( )
+.It Dv prref:store(value )
+.It Dv prref:sub(delta )
+.It Dv prref:xor(delta )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.shared.pr
+submodule implements volatile atomic instructions on shared values.
+These atomics provide a safe and efficient mechanism for passing values between
+threads without requiring external synchronization.
+.Pp
+For detailed explanations of lifetime management, reference semantics,
+shared-memory usage, and serialization/deserialization of values, see
+.Xr ck 3lua .
+.Pp
+Avaliability of individual primitives depends on the architecture and on how
+Concurrency Kit was configured at build time.
+Not all operations are supported on all systems.
+.Bl -tag -width XXXX
+.It Dv prref = ck.shared.pr.new(value )
+Allocate and initialize a new reference-counted atomic value.
+The returned object is a reference to the value.
+The value itself is backed by storage allocated from the heap, independent of
+any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv prref = ck.shared.pr.retain(cookie )
+Retain a reference to an existing atomic value, referring to the value that
+produced
+.Fa cookie .
+.It Dv cookie = prref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+value referred to by 
+.Va prref .
+The cookie itself does not constitue a reference.
+.It Dv prref:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv prref:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = prref:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = prref:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = prref:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = prref:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = prref:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv prref:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = prref:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = prref:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = prref:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv prref:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = prref:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = prref:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv prref:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = prref:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv prref:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv prref:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv prref:rfo( )
+Wraps
+.Fn ck_pr_rfo .
+.It Dv prref:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv prref:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv prref:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.El
+.Sh SEE ALSO
+.Xr ck_pr 3 ,
+.Xr ck 3lua ,
+.Xr ck.pr 3lua ,
+.Xr ck.shared 3lua ,
+.Xr ck.shared.pr.md128 3lua
+.Sh AUTHORS
+.An Ryan Moeller

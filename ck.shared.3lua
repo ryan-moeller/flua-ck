@@ -1,0 +1,112 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 18, 2025
+.Dt CK.SHARED 3lua
+.Os
+.Sh NAME
+.Nm ck.shared
+.Nm ck.shared.const
+.Nm ck.shared.mut
+.Nd Heap-allocated shared values built from Concurrency Kit building blocks
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Ed
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv constref = ck.shared.const.new(value )
+.It Dv constref = ck.shared.const.retain(cookie )
+.It Dv cookie = constref:cookie( )
+.It Dv value = constref:load( )
+.It Dv mutref = ck.shared.mut.new(value )
+.It Dv mutref = ck.shared.mut.retain(cookie )
+.It Dv cookie = mutref:cookie( )
+.It Dv value = mutref:load( )
+.It Dv mutref:rfo( )
+.It Dv mutref:store(value )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.shared
+submodule implements a variety of shared value types.
+The
+.Nm ck.shared.const
+submodule implements a shared value optimized for scenarios that do not require
+mutation.
+The
+.Nm ck.shared.mut
+submodule implements a shared value that can be atomically replaced.
+Documented separately,
+.Xr ck.shared.pr 3lua
+and
+.Xr ck.shared.pr.md128 3lua
+implement shared atomic values supporting the
+.Xr ck_pr 3
+suite of volatile atomic instructions.
+These values provide a safe and efficient mechanism for passing values between
+threads without requiring external synchronization.
+.Pp
+For detailed explanations of lifetime management, reference semantics,
+shared-memory usage, and serialization/deserialization of values, see
+.Xr ck 3lua .
+.Bl -tag -width XXXX
+.It Dv constref = ck.shared.const.new(value )
+Allocate and initialize a new reference-counted immutable value.
+The returned object is a reference to the value.
+The value itself is serialized to storage allocated from the heap, independent
+of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv constref = ck.shared.const.retain(cookie )
+Retain a reference to an existing immutable value, referring to the value that
+produced
+.Fa cookie .
+.It Dv cookie = constref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+value referred to by 
+.Va constref .
+The cookie itself does not constitue a reference.
+.It Dv value = constref:load( )
+Load the referenced value into the Lua state.
+This is safe to perform concurrently in multiple threads without
+synchronization.
+.It Dv mutref = ck.shared.mut.new(value )
+Allocate and initialize a new reference-counted mutable value.
+The returned object is a reference to the value.
+The value itself is serialized to storage allocated from the heap, independent
+of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv mutref = ck.shared.mut.retain(cookie )
+Retain a reference to an existing mutable value, referring to the value that
+produced
+.Fa cookie .
+.It Dv cookie = mutref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+value referred to by 
+.Va mutref .
+The cookie itself does not constitue a reference.
+.It Dv value = mutref:load( )
+Atomically load the referenced value into the Lua state.
+This is safe to perform concurrently in multiple threads without
+synchronization.
+.It Dv mutref:rfo( )
+Wraps
+.Fn ck_pr_rfo .
+.It Dv mutref:store(value )
+Atomically replace the shared value.
+This is safe to perform concurrently in multiple threads without
+synchronization.
+.El
+.Sh SEE ALSO
+.Xr ck 3lua ,
+.Xr ck.pr 3lua ,
+.Xr ck.shared.pr 3lua ,
+.Xr ch.shared.pr.md128 3lua
+.Sh AUTHORS
+.An Ryan Moeller

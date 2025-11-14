@@ -1,0 +1,36 @@
+freebsd_instance:
+  cpu: 1
+  memory: 1G
+
+task:
+  matrix:
+    - name: snapshots/amd64/13.5-STABLE
+      freebsd_instance:
+        image_family: freebsd-13-5-snap
+    - name: snapshots/amd64/14.3-STABLE
+      freebsd_instance:
+        image_family: freebsd-14-3-snap
+    - name: snapshots/amd64/15.0-STABLE
+      freebsd_instance:
+        image_family: freebsd-15-0-amd64-ufs-snap
+    - name: releases/amd64/13.5-RELEASE
+      freebsd_instance:
+        image_family: freebsd-13-5
+    - name: releases/amd64/14.3-RELEASE
+      freebsd_instance:
+        image_family: freebsd-14-3
+    - name: releases/amd64/15.0-RC2
+      freebsd_instance:
+        image_family: freebsd-15-0-amd64-ufs
+  stateful: false
+  env:
+    ARCHIVES_BASE: https://download.freebsd.org/${CIRRUS_TASK_NAME}
+  build_setup_script:
+    - test -e /usr/src/contrib/lua/src/lua.h ||
+      fetch -o - ${ARCHIVES_BASE}/src.txz | tar x -C /
+    - pkg install -y concurrencykit
+  build_script:
+    - make -j${CIRRUS_CPU}
+    - make install
+  # TODO: manlint for out-of-base pages
+  # TODO: testing

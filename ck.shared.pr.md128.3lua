@@ -1,0 +1,992 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 18, 2025
+.Dt CK.SHARED.PR.MD128 3lua
+.Os
+.Sh NAME
+.Nm ck.shared.pr.md128
+.Nd Lua bindings for Concurrency Kit machine-dependent 128-bit atomic primitives
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Ed
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv md128ref = ck.shared.pr.md128.new(value )
+.It Dv md128ref = ck.shared.pr.md128.retain(cookie )
+.It Dv cookie = md128ref:cookie( )
+.It Dv md128ref:rfo( )
+.It Dv u8view = md128ref.u8
+.It Dv modified = u8view:cas(old_values, new_values )
+.It Dv modified, original_value = u8view:cas(old_values, new_values )
+.It Dv value = u8view:load( )
+.It Dv u8component = u8view[i ]
+.It Dv u8component:add(delta )
+.It Dv u8component:and(delta )
+.It Dv modified = u8component:cas(old_value, new_value )
+.It Dv modified, original_value = u8component:cas_value(old_value, new_value )
+.It Dv u8component:dec( )
+.It Dv zero = u8component:dec_is_zero( )
+.It Dv original_value = u8component:faa(delta )
+.It Dv original_value = u8component:fas(new_value )
+.It Dv u8component:inc( )
+.It Dv zero = u8component:inc_is_zero( )
+.It Dv value = u8component:load( )
+.It Dv u8component:neg( )
+.It Dv zero = u8component:neg_is_zero( )
+.It Dv u8component:not( )
+.It Dv u8component:or(delta )
+.It Dv u8component:store(value )
+.It Dv u8component:sub(delta )
+.It Dv u8component:xor(delta )
+.It Dv u16view = md128ref.u16
+.It Dv modified = u16view:cas(old_values, new_values )
+.It Dv modified, original_value = u16view:cas(old_values, new_values )
+.It Dv value = u16view:load( )
+.It Dv u16component = u16view[i ]
+.It Dv u16component:add(delta )
+.It Dv u16component:and(delta )
+.It Dv bit_value = u16component:btc(bit_index )
+.It Dv bit_value = u16component:btr(bit_index )
+.It Dv bit_value = u16component:bts(bit_index )
+.It Dv modified = u16component:cas(old_value, new_value )
+.It Dv modified, original_value = u16component:cas_value(old_value, new_value )
+.It Dv u16component:dec( )
+.It Dv zero = u16component:dec_is_zero( )
+.It Dv original_value = u16component:faa(delta )
+.It Dv original_value = u16component:fas(new_value )
+.It Dv u16component:inc( )
+.It Dv zero = u16component:inc_is_zero( )
+.It Dv value = u16component:load( )
+.It Dv u16component:neg( )
+.It Dv zero = u16component:neg_is_zero( )
+.It Dv u16component:not( )
+.It Dv u16component:or(delta )
+.It Dv u16component:store(value )
+.It Dv u16component:sub(delta )
+.It Dv u16component:xor(delta )
+.It Dv u32view = md128ref.u32
+.It Dv modified = u32view:cas(old_values, new_values )
+.It Dv modified, original_value = u32view:cas(old_values, new_values )
+.It Dv value = u32view:load( )
+.It Dv u32component = u32view[i ]
+.It Dv u32component:add(delta )
+.It Dv u32component:and(delta )
+.It Dv bit_value = u32component:btc(bit_index )
+.It Dv bit_value = u32component:btr(bit_index )
+.It Dv bit_value = u32component:bts(bit_index )
+.It Dv modified = u32component:cas(old_value, new_value )
+.It Dv modified, original_value = u32component:cas_value(old_value, new_value )
+.It Dv u32component:dec( )
+.It Dv zero = u32component:dec_is_zero( )
+.It Dv original_value = u32component:faa(delta )
+.It Dv original_value = u32component:fas(new_value )
+.It Dv u32component:inc( )
+.It Dv zero = u32component:inc_is_zero( )
+.It Dv value = u32component:load( )
+.It Dv u32component:neg( )
+.It Dv zero = u32component:neg_is_zero( )
+.It Dv u32component:not( )
+.It Dv u32component:or(delta )
+.It Dv u32component:store(value )
+.It Dv u32component:sub(delta )
+.It Dv u32component:xor(delta )
+.It Dv u64view = md128ref.u64
+.It Dv modified = u64view:cas(old_values, new_values )
+.It Dv modified, original_value = u64view:cas(old_values, new_values )
+.It Dv value = u64view:load( )
+.It Dv u64component = u64view[i ]
+.It Dv u64component:add(delta )
+.It Dv u64component:and(delta )
+.It Dv bit_value = u64component:btc(bit_index )
+.It Dv bit_value = u64component:btr(bit_index )
+.It Dv bit_value = u64component:bts(bit_index )
+.It Dv modified = u64component:cas(old_value, new_value )
+.It Dv modified, original_value = u64component:cas_value(old_value, new_value )
+.It Dv u64component:dec( )
+.It Dv zero = u64component:dec_is_zero( )
+.It Dv original_value = u64component:faa(delta )
+.It Dv original_value = u64component:fas(new_value )
+.It Dv u64component:inc( )
+.It Dv zero = u64component:inc_is_zero( )
+.It Dv value = u64component:load( )
+.It Dv u64component:neg( )
+.It Dv zero = u64component:neg_is_zero( )
+.It Dv u64component:not( )
+.It Dv u64component:or(delta )
+.It Dv u64component:store(value )
+.It Dv u64component:sub(delta )
+.It Dv u64component:xor(delta )
+.It Dv charview = md128ref.c
+.It Dv modified = charview:cas(old_values, new_values )
+.It Dv modified, original_value = charview:cas(old_values, new_values )
+.It Dv value = charview:load( )
+.It Dv charcomponent = charview[i ]
+.It Dv charcomponent:add(delta )
+.It Dv charcomponent:and(delta )
+.It Dv modified = charcomponent:cas(old_value, new_value )
+.It Dv modified, original_value = charcomponent:cas_value(old_value, new_value )
+.It Dv charcomponent:dec( )
+.It Dv zero = charcomponent:dec_is_zero( )
+.It Dv original_value = charcomponent:faa(delta )
+.It Dv original_value = charcomponent:fas(new_value )
+.It Dv charcomponent:inc( )
+.It Dv zero = charcomponent:inc_is_zero( )
+.It Dv value = charcomponent:load( )
+.It Dv charcomponent:neg( )
+.It Dv zero = charcomponent:neg_is_zero( )
+.It Dv charcomponent:not( )
+.It Dv charcomponent:or(delta )
+.It Dv charcomponent:store(value )
+.It Dv charcomponent:sub(delta )
+.It Dv charcomponent:xor(delta )
+.It Dv doubleview = md128ref.d
+.It Dv modified = doubleview:cas(old_value, new_value )
+.It Dv doublecomponent = doubleview[i ]
+.It Dv doublecomponent:add(delta )
+.It Dv modified = doublecomponent:cas(old_value, new_value )
+.It Dv modified, original_value = doublecomponent:cas_value(old_value, new_value )
+.It Dv doublecomponent:dec( )
+.It Dv original_value = doublecomponent:faa(delta )
+.It Dv original_value = doublecomponent:fas(new_value )
+.It Dv doublecomponent:inc( )
+.It Dv value = doublecomponent:load( )
+.It Dv doublecomponent:neg( )
+.It Dv doublecomponent:store(value )
+.It Dv doublecomponent:sub(delta )
+.It Dv intview = md128ref.i
+.It Dv modified = intview:cas(old_values, new_values )
+.It Dv modified, original_value = intview:cas(old_values, new_values )
+.It Dv value = intview:load( )
+.It Dv intcomponent = intview[i ]
+.It Dv intcomponent:add(delta )
+.It Dv intcomponent:and(delta )
+.It Dv bit_value = intcomponent:btc(bit_index )
+.It Dv bit_value = intcomponent:btr(bit_index )
+.It Dv bit_value = intcomponent:bts(bit_index )
+.It Dv modified = intcomponent:cas(old_value, new_value )
+.It Dv modified, original_value = intcomponent:cas_value(old_value, new_value )
+.It Dv intcomponent:dec( )
+.It Dv zero = intcomponent:dec_is_zero( )
+.It Dv original_value = intcomponent:faa(delta )
+.It Dv original_value = intcomponent:fas(new_value )
+.It Dv intcomponent:inc( )
+.It Dv zero = intcomponent:inc_is_zero( )
+.It Dv value = intcomponent:load( )
+.It Dv intcomponent:neg( )
+.It Dv zero = intcomponent:neg_is_zero( )
+.It Dv intcomponent:not( )
+.It Dv intcomponent:or(delta )
+.It Dv intcomponent:store(value )
+.It Dv intcomponent:sub(delta )
+.It Dv intcomponent:xor(delta )
+.It Dv ptrview = md128ref.p
+.It Dv modified = ptrview:cas(old_values, new_values )
+.It Dv modified, original_value = ptrview:cas(old_values, new_values )
+.It Dv value = ptrview:load( )
+.It Dv ptrcomponent = ptrview[i ]
+.It Dv ptrcomponent:add(delta )
+.It Dv ptrcomponent:and(delta )
+.It Dv bit_value = ptrcomponent:btc(bit_index )
+.It Dv bit_value = ptrcomponent:btr(bit_index )
+.It Dv bit_value = ptrcomponent:bts(bit_index )
+.It Dv modified = ptrcomponent:cas(old_value, new_value )
+.It Dv modified, original_value = ptrcomponent:cas_value(old_value, new_value )
+.It Dv ptrcomponent:dec( )
+.It Dv zero = ptrcomponent:dec_is_zero( )
+.It Dv original_value = ptrcomponent:faa(delta )
+.It Dv original_value = ptrcomponent:fas(new_value )
+.It Dv ptrcomponent:inc( )
+.It Dv zero = ptrcomponent:inc_is_zero( )
+.It Dv value = ptrcomponent:load( )
+.It Dv ptrcomponent:neg( )
+.It Dv zero = ptrcomponent:neg_is_zero( )
+.It Dv ptrcomponent:not( )
+.It Dv ptrcomponent:or(delta )
+.It Dv ptrcomponent:store(value )
+.It Dv ptrcomponent:sub(delta )
+.It Dv ptrcomponent:xor(delta )
+.It Dv uintview = md128ref.u
+.It Dv modified = uintview:cas(old_values, new_values )
+.It Dv modified, original_value = uintview:cas(old_values, new_values )
+.It Dv value = uintview:load( )
+.It Dv uintcomponent = uintview[i ]
+.It Dv uintcomponent:add(delta )
+.It Dv uintcomponent:and(delta )
+.It Dv bit_value = uintcomponent:btc(bit_index )
+.It Dv bit_value = uintcomponent:btr(bit_index )
+.It Dv bit_value = uintcomponent:bts(bit_index )
+.It Dv modified = uintcomponent:cas(old_value, new_value )
+.It Dv modified, original_value = uintcomponent:cas_value(old_value, new_value )
+.It Dv uintcomponent:dec( )
+.It Dv zero = uintcomponent:dec_is_zero( )
+.It Dv original_value = uintcomponent:faa(delta )
+.It Dv original_value = uintcomponent:fas(new_value )
+.It Dv uintcomponent:inc( )
+.It Dv zero = uintcomponent:inc_is_zero( )
+.It Dv value = uintcomponent:load( )
+.It Dv uintcomponent:neg( )
+.It Dv zero = uintcomponent:neg_is_zero( )
+.It Dv uintcomponent:not( )
+.It Dv uintcomponent:or(delta )
+.It Dv uintcomponent:store(value )
+.It Dv uintcomponent:sub(delta )
+.It Dv uintcomponent:xor(delta )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.shared.pr.md128
+submodule implements volatile volatile atomic instructions on 128-bit shared
+values.
+.Xr ck_pr 3
+exposes a few machine-dependent 128-bit volatile atomic instructions.
+These are provided as methods on typed views access through fields on these
+shared values.
+Additonally, the typed views are indexable, allowing use of the full suite of
+.Xr ck_pr 3
+volatile atomic instructions on the components of the view.
+These queues provide a safe and efficient mechanism for passing values between
+threads without requiring external synchronization.
+.Pp
+For detailed explanations of lifetime management, reference semantics,
+shared-memory usage, and serialization/deserialization of values, see
+.Xr ck 3lua .
+.Pp
+Avaliability of individual primitives depends on the architecture and on how
+Concurrency Kit was configured at build time.
+Not all operations are supported on all systems.
+.Bl -tag -width XXXX
+.It Dv md128ref = ck.shared.pr.md128.new([value ] )
+Allocate and initialize a new reference-counted 128-bit atomic value.
+The returned object is a reference to the value.
+The value itself is backed by storage allocated from the heap, independent of
+any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.Pp
+.Fa value
+may be given either as a 16-character string or as a table of values.
+The number of values determines the interpretation.
+For example, a table of 16 integers will set the values as
+.Vt uint8_t
+components.
+The type of all values must match, so, for example, mixing an integer and a
+floating point number in the same initialization table is an error.
+.It Dv md128ref = ck.shared.pr.md128.retain(cookie )
+Retain a reference to an existing 128-bit atomic value, referring to the value
+that produced
+.Fa cookie .
+.It Dv cookie = md128ref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+value referred to by 
+.Va md128ref .
+The cookie itself does not constitue a reference.
+.It Dv md128ref:rfo( )
+Wraps
+.Fn ck_pr_rfo .
+.It Dv u8view = md128ref.u8
+Access methods with a
+.Vt uint8_t[16]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = u8view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_8_16 .
+.It Dv modified, original_value = u8view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_8_16_value .
+.It Dv value = u8view:load( )
+Wraps
+.Fn ck_pr_md_load_8_16 .
+.It Dv u8component = u8view[i ]
+Access
+.Vt uint8_t
+methods operating on component
+.Va i
+of the view.
+.It Dv u8component:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv u8component:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv modified = u8component:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = u8component:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv u8component:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = u8component:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = u8component:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = u8component:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv u8component:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = u8component:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = u8component:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv u8component:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = u8component:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv u8component:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv u8component:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv u8component:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv u8component:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv u8component:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv u16view = md128ref.u16
+Access methods with a
+.Vt uint16_t[8]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = u16view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_16_8 .
+.It Dv modified, original_value = u16view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_16_8_value .
+.It Dv value = u16view:load( )
+Wraps
+.Fn ck_pr_load_16_8 .
+.It Dv u16component = u16view[i ]
+Access
+.Vt uint16_t
+methods operating on component
+.Va i
+of the view.
+.It Dv u16component:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv u16component:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = u16component:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = u16component:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = u16component:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = u16component:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = u16component:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv u16component:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = u16component:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = u16component:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = u16component:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv u16component:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = u16component:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = u16component:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv u16component:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = u16component:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv u16component:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv u16component:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv u16component:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv u16component:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv u16component:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv u32view = md128ref.u32
+Access methods with a
+.Vt uint32_t[4]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = u32view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_32_4 .
+.It Dv modified, original_value = u32view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_32_4_value .
+.It Dv value = u32view:load( )
+Wraps
+.Fn ck_pr_load_32_4 .
+.It Dv u32component = u32view[i ]
+Access
+.Vt uint32_t
+methods operating on component
+.Va i
+of the view.
+.It Dv u32component:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv u32component:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = u32component:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = u32component:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = u32component:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = u32component:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = u32component:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv u32component:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = u32component:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = u32component:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = u32component:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv u32component:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = u32component:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = u32component:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv u32component:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = u32component:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv u32component:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv u32component:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv u32component:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv u32component:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv u32component:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv u64view = md128ref.u64
+Access methods with a
+.Vt uint64_t[2]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = u64view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_64_2 .
+.It Dv modified, original_value = u64view:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_64_2_value .
+.It Dv value = u64view:load( )
+Wraps
+.Fn ck_pr_load_64_2 .
+.It Dv u64component = u64view[i ]
+Access
+.Vt uint64_t
+methods operating on component
+.Va i
+of the view.
+.It Dv u64component:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv u64component:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = u64component:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = u64component:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = u64component:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = u64component:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = u64component:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv u64component:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = u64component:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = u64component:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = u64component:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv u64component:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = u64component:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = u64component:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv u64component:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = u64component:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv u64component:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv u64component:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv u64component:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv u64component:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv u64component:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv charview = md128ref.c
+Access methods with a
+.Vt char[16]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = charview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_char_16 .
+.It Dv modified, original_value = charview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_char_16_value .
+.It Dv value = charview:load( )
+Wraps
+.Fn ck_pr_load_char_16 .
+.It Dv charcomponent = charview[i ]
+Access
+.Vt char
+methods operating on component
+.Va i
+of the view.
+.It Dv charcomponent:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv charcomponent:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv modified = charcomponent:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = charcomponent:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv charcomponent:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = charcomponent:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = charcomponent:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = charcomponent:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv charcomponent:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = charcomponent:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = charcomponent:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv charcomponent:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = charcomponent:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv charcomponent:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv charcomponent:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv charcomponent:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv charcomponent:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv charcomponent:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv doubleview = md128ref.d
+Access methods with a
+.Vt double[2]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = doubleview:cas(old_value, new_value )
+Wraps
+.Fn ck_pr_cas_double_2 .
+.It Dv doublecomponent = doubleview[i ]
+Access
+.Vt double
+methods operating on component
+.Va i
+of the view.
+.It Dv doublecomponent:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv modified = doublecomponent:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = doublecomponent:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv doublecomponent:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = doublecomponent:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = doublecomponent:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv doublecomponent:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = doublecomponent:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv doublecomponent:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv doublecomponent:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv doublecomponent:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv intview = md128ref.i
+Access methods with a
+.Vt int[4]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = intview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_int_4 .
+.It Dv modified, original_value = intview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_int_4_value .
+.It Dv value = intview:load( )
+Wraps
+.Fn ck_pr_load_int_4 .
+.It Dv intcomponent = intview[i ]
+Access
+.Vt int
+methods operating on component
+.Va i
+of the view.
+.It Dv intcomponent:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv intcomponent:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = intcomponent:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = intcomponent:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = intcomponent:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = intcomponent:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = intcomponent:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv intcomponent:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = intcomponent:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = intcomponent:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = intcomponent:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv intcomponent:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = intcomponent:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = intcomponent:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv intcomponent:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = intcomponent:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv intcomponent:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv intcomponent:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv intcomponent:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv intcomponent:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv intcomponent:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv ptrview = md128ref.p
+Access methods with a
+.Vt (void *)[2]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = ptrview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_ptr_2 .
+.It Dv modified, original_value = ptrview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_ptr_2_value .
+.It Dv value = ptrview:load( )
+Wraps
+.Fn ck_pr_load_ptr_2 .
+.It Dv ptrcomponent = ptrview[i ]
+Access
+.Vt void *
+methods operating on component
+.Va i
+of the view.
+.It Dv ptrcomponent:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv ptrcomponent:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = ptrcomponent:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = ptrcomponent:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = ptrcomponent:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = ptrcomponent:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = ptrcomponent:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv ptrcomponent:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = ptrcomponent:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = ptrcomponent:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = ptrcomponent:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv ptrcomponent:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = ptrcomponent:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = ptrcomponent:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv ptrcomponent:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = ptrcomponent:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv ptrcomponent:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv ptrcomponent:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv ptrcomponent:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv ptrcomponent:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv ptrcomponent:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.It Dv uintview = md128ref.u
+Access methods with an
+.Vt (unsigned int)[4]
+typed view of the value referred to by
+.Va md128ref .
+.It Dv modified = uintview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_uint_4 .
+.It Dv modified, original_value = uintview:cas(old_values, new_values )
+Wraps
+.Fn ck_pr_cas_uint_4_value .
+.It Dv value = uintview:load( )
+Wraps
+.Fn ck_pr_load_uint_4 .
+.It Dv uintcomponent = uintview[i ]
+Access
+.Vt unsigned int
+methods operating on component
+.Va i
+of the view.
+.It Dv uintcomponent:add(delta )
+Wraps
+.Xr ck_pr_add 3 .
+.It Dv uintcomponent:and(delta )
+Wraps
+.Xr ck_pr_and 3 .
+.It Dv bit_value = uintcomponent:btc(bit_index )
+Wraps
+.Xr ck_pr_btc 3 .
+.It Dv bit_value = uintcomponent:btr(bit_index )
+Wraps
+.Xr ck_pr_btr 3 .
+.It Dv bit_value = uintcomponent:bts(bit_index )
+Wraps
+.Xr ck_pr_bts 3 .
+.It Dv modified = uintcomponent:cas(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv modified, original_value = uintcomponent:cas_value(old_value, new_value )
+Wraps
+.Xr ck_pr_cas 3 .
+.It Dv uintcomponent:dec( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv zero = uintcomponent:dec_is_zero( )
+Wraps
+.Xr ck_pr_dec 3 .
+.It Dv original_value = uintcomponent:faa(delta )
+Wraps
+.Xr ck_pr_faa 3 .
+.It Dv original_value = uintcomponent:fas(new_value )
+Wraps
+.Xr ck_pr_fas 3 .
+.It Dv uintcomponent:inc( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv zero = uintcomponent:inc_is_zero( )
+Wraps
+.Xr ck_pr_inc 3 .
+.It Dv value = uintcomponent:load( )
+Wraps
+.Xr ck_pr_load 3 .
+.It Dv uintcomponent:neg( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv zero = uintcomponent:neg_is_zero( )
+Wraps
+.Xr ck_pr_neg 3 .
+.It Dv uintcomponent:not( )
+Wraps
+.Xr ck_pr_not 3 .
+.It Dv uintcomponent:or(delta )
+Wraps
+.Xr ck_pr_or 3 .
+.It Dv uintcomponent:store(value )
+Wraps
+.Xr ck_pr_store 3 .
+.It Dv uintcomponent:sub(delta )
+Wraps
+.Xr ck_pr_sub 3 .
+.It Dv uintcomponent:xor(delta )
+Wraps
+.Xr ck_pr_xor 3 .
+.El
+.Sh SEE ALSO
+.Xr ck_pr 3 ,
+.Xr ck 3lua ,
+.Xr ck.pr 3lua ,
+.Xr ck.shared 3lua ,
+.Xr ck.shared.pr 3lua
+.Sh AUTHORS
+.An Ryan Moeller

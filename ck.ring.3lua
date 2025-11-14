@@ -1,0 +1,195 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 18, 2025
+.Dt CK.RING 3lua
+.Os
+.Sh NAME
+.Nm ck.ring
+.Nm ck.ring.mpmc
+.Nm ck.ring.mpsc
+.Nm ck.ring.spmc
+.Nm ck.ring.spsc
+.Nd Lua bindings for Concurrency Kit lock-free FIFO ring buffers
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Ed
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv spscref = ck.ring.spsc.new(size )
+.It Dv spscref = ck.ring.spsc.retain(cookie )
+.It Dv cookie = spscref:cookie( )
+.It Dv size = spscref:size( )
+.It Dv capacity = spscref:capacity( )
+.It Dv enqueued, size = spscref:enqueue(value )
+.It Dv dequeued, value = spscref:dequeue( )
+.It Dv mpmcref = ck.ring.mpmc.new(size )
+.It Dv mpmcref = ck.ring.mpmc.retain(cookie )
+.It Dv cookie = mpmcref:cookie( )
+.It Dv size = mpmcref:size( )
+.It Dv capacity = mpmcref:capacity( )
+.It Dv enqueued, size = mpmcref:enqueue(value )
+.It Dv dequeued, value = mpmcref:trydequeue( )
+.It Dv dequeued, value = mpmcref:dequeue( )
+.It Dv spmcref = ck.ring.spmc.new(size )
+.It Dv spmcref = ck.ring.spmc.retain(cookie )
+.It Dv cookie = spmcref:cookie( )
+.It Dv size = spmcref:size( )
+.It Dv capacity = spmcref:capacity( )
+.It Dv enqueued, size = spmcref:enqueue(value )
+.It Dv dequeued, value = spmcref:trydequeue( )
+.It Dv dequeued, value = spmcref:dequeue( )
+.It Dv mpscref = ck.ring.mpsc.new(size )
+.It Dv mpscref = ck.ring.mpsc.retain(cookie )
+.It Dv cookie = mpscref:cookie( )
+.It Dv size = mpscref:size( )
+.It Dv capacity = mpscref:capacity( )
+.It Dv enqueued, size = mpscref:enqueue(value )
+.It Dv dequeued, value = mpscref:dequeue( )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.ring
+submodule implements lock-free first-in, first-out
+.Pq FIFO
+ring buffers for single-producer/single-consumer
+.Pq SPSC ,
+multiple-producer/multiple-consumer
+.Pq MPMP ,
+single-producer/multiple-consumer
+.Pq SPMC ,
+and multiple-producer/single-consumer
+.Pq MPSC
+scenarios.
+These ring buffers provide a safe and efficient mechanism for passing values
+between threads without requiring external synchronization.
+.Pp
+For detailed explanations of lifetime management, reference semantics,
+shared-memory usage, and serialization/deserialization of values, see
+.Xr ck 3lua .
+.Bl -tag -width XXXX
+.It Dv spscref = ck.ring.spsc.new(size )
+Allocate and initialize a new reference-counted FIFO ring buffer for SPSC usage.
+The returned object is a reference to the ring buffer.
+The ring buffer itself is allocated from the heap, independent of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv spscref = ck.ring.spsc.retain(cookie )
+Retain a reference to an existing FIFO ring buffer for SPSC usage, referring to
+the ring buffer that produced
+.Fa cookie .
+.It Dv cookie = spscref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+ring buffer referred to by
+.Va spscref .
+The cookie itself does not constitue a reference.
+.It Dv size = spscref:size( )
+Wraps
+.Xr ck_ring_size 3 .
+.It Dv capacity = spscref:capacity( )
+Wraps
+.Xr ck_ring_capacity 3 .
+.It Dv enqueued, size = spscref:enqueue(value )
+Wraps
+.Xr ck_ring_enqueue_spsc_size 3 .
+.It Dv dequeued, value = spscref:dequeue( )
+Wraps
+.Xr ck_ring_dequeue_spsc 3 .
+.It Dv mpmcref = ck.ring.mpmc.new(size )
+Allocate and initialize a new reference-counted FIFO ring buffer for MPMC usage.
+The returned object is a reference to the ring buffer.
+The ring buffer itself is allocated from the heap, independent of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv mpmcref = ck.ring.mpmc.retain(cookie )
+Retain a reference to an existing FIFO ring buffer for MPMC usage, referring to
+the ring buffer that produced
+.Fa cookie .
+.It Dv cookie = mpmcref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+ring buffer referred to by
+.Va mpmcref .
+The cookie itself does not constitue a reference.
+.It Dv size = mpmcref:size( )
+Wraps
+.Xr ck_ring_size 3 .
+.It Dv capacity = mpmcref:capacity( )
+Wraps
+.Xr ck_ring_capacity 3 .
+.It Dv enqueued, size = mpmcref:enqueue(value )
+Wraps
+.Fn ck_ring_enqueue_mpmc_size .
+.It Dv dequeued, value = mpmcref:trydequeue( )
+Wraps
+.Fn ck_ring_trydequeue_mpmc .
+.It Dv dequeued, value = mpmcref:dequeue( )
+Wraps
+.Fn ck_ring_dequeue_mpmc .
+.It Dv spmcref = ck.ring.spmc.new(size )
+Allocate and initialize a new reference-counted FIFO ring buffer for SPMC usage.
+The returned object is a reference to the ring buffer.
+The ring buffer itself is allocated from the heap, independent of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv spmcref = ck.ring.spmc.retain(cookie )
+Retain a reference to an existing FIFO ring buffer for SPMC usage, referring to
+the ring buffer that produced
+.Fa cookie .
+.It Dv cookie = spmcref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+ring buffer referred to by
+.Va spmcref .
+.It Dv size = spmcref:size( )
+Wraps
+.Xr ck_ring_size 3 .
+.It Dv capacity = spmcref:capacity( )
+Wraps
+.Xr ck_ring_capacity 3 .
+.It Dv enqueued, size = spmcref:enqueue(value )
+Wraps
+.Xr ck_ring_enqueue_spmc_size 3 .
+.It Dv dequeued, value = spmcref:trydequeue( )
+Wraps
+.Xr ck_ring_trydequeue_spmc 3 .
+.It Dv dequeued, value = spmcref:dequeue( )
+Wraps
+.Xr ck_ring_dequeue_spmc 3 .
+.It Dv mpscref = ck.ring.mpsc.new(size )
+Allocate and initialize a new reference-counted FIFO ring buffer for MPSC usage.
+The returned object is a reference to the ring buffer.
+The ring buffer itself is allocated from the heap, independent of any Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv mpscref = ck.ring.mpsc.retain(cookie )
+Retain a reference to an existing FIFO ring buffer for MPSC usage, referring to
+the ring buffer that produced
+.Fa cookie .
+.It Dv cookie = mpscref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+ring buffer referred to by
+.Va mpscref .
+.It Dv size = mpscref:size( )
+Wraps
+.Xr ck_ring_size 3 .
+.It Dv capacity = mpscref:capacity( )
+Wraps
+.Xr ck_ring_capacity 3 .
+.It Dv enqueued, size = mpscref:enqueue(value )
+Wraps
+.Fn ck_ring_enqueue_mpsc_size .
+.It Dv dequeued, value = mpscref:dequeue( )
+Wraps
+.Fn ck_ring_dequeue_mpsc .
+.El
+.Sh SEE ALSO
+.Xr ck 3lua ,
+.Xr ck.fifo 3lua
+.Sh AUTHORS
+.An Ryan Moeller

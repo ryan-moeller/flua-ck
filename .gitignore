@@ -1,0 +1,7 @@
+*.gz
+.*
+!.cirrus.yml
+!.gitignore
+*.so*
+*.core
+*.pico

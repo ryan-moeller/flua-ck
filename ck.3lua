@@ -1,0 +1,105 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 21, 2025
+.Dt CK 3lua
+.Os
+.Sh NAME
+.Nm ck
+.Nd Lua bindings for Concurrency Kit
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Ed
+.Sh DESCRIPTION
+The
+.Nm ck
+module is a collection of data structures built on top of Concurrency Kit.
+It provides an extensible serialization and deserialization interface for
+sharing Lua values between separate states running on different threads in the
+same process.
+.Pp
+Several data structures are exposed for various use cases, such as constant
+references, mutable references, queues, stacks, etc.
+.Sh LIFETIMES
+Data structures in this module are allocated from the heap so are independent
+of any Lua state.
+Lifetimes are managed by reference counting.
+References are retained explicitly and are released by the garbage collector.
+.Sh COOKIES
+Data structures with a
+.Fn :cookie
+method are designed to be shared between multiple threads in the same process.
+The
+.Fn :cookie
+method returns a
+.Vt lightuserdata
+value
+.Pq a pointer to the data structure
+which can be sent to another thread and used to retain a reference.
+The cookie itself does not constitute a reference.
+One cookie can be sent to multiple threads and can be used to retain multiple
+references.
+.Sh SERIALIZATION AND DESERIALIZATION
+Passing a value between threads involves serialization and deserialization
+.Pq serde
+through a heap-allocated buffer that decouples the lifetime of the value from
+the sending and receiving Lua states and enables asynchronous operation.
+.Pp
+This module provides built-in serde support for primitive Lua types, including
+.Vt nil ,
+.Vt boolean ,
+.Vt lightuserdata ,
+.Vt integer ,
+.Vt number ,
+.Vt string ,
+and
+.Vt function .
+Functions allow
+.Dv _ENV
+as the first upvalue.
+All other upvalues must be one of the serializable primitive types, excluding
+functions.
+.Pp
+More sophisticated needs can be satisfied by implementing on top of the
+primitive types.
+As an optional convenience, the serde implementation also supports custom serde
+types to extend the built-in serde primitives.
+A custom serde is defined by
+.Va serialize
+and
+.Va deserialize
+metamethods on an object.
+A
+.Va serialize
+metamethod takes the object
+.Pq Va self
+and a file-like stream to which a serialized representation of
+.Va self
+is written.
+A
+.Va deserialize
+metamethod receives a file-like stream from which the serialized representation
+of the object is read and returns a deserialized object.
+This pair of metamethods is automatically serialized, cached, and assigned a
+unique type identifier, allowing every thread to use the correct custom serde
+methods without requiring a-priori knowledge of their format in every thread.
+This extension mechanism is optional but can be convenient.
+.Sh EXAMPLES
+Do a thing:
+.Bd -literal -offset indent
+-- TODO
+.Ed
+.Sh SEE ALSO
+.Xr ck.fifo 3lua ,
+.Xr ck.pr 3lua ,
+.Xr ck.ring 3lua ,
+.Xr ck.sequence 3lua ,
+.Xr ck.shared 3lua ,
+.Xr ck.shared.pr 3lua ,
+.Xr ck.shared.pr.md128 3lua ,
+.Xr pthread 3lua
+.Sh AUTHORS
+.An Ryan Moeller

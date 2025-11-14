@@ -1,0 +1,67 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 20, 2025
+.Dt CK.SEQUENCE 3lua
+.Os
+.Sh NAME
+.Nm ck.sequence
+.Nd Lua bindings for Concurrency Kit sequence locks
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv seqref = ck.sequence.new( )
+.It Dv seqref = ck.sequence.retain(cookie )
+.It Dv cookie = seqref:cookie( )
+.It Dv version = seqref:read_begin( )
+.It Dv retry = seqref:read_retry(version )
+.It Dv seqref:write_begin( )
+.It Dv seqref:write_end( )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.sequence
+submodule implements shared sequence locks.
+.Pp
+For detailed explanations of lifetime management and reference semantics, see
+.Xr ck 3lua .
+.Bl -tag -width XXXX
+.It Dv seqref = ck.sequence.new( )
+Allocate and initialize a new reference-counted sequence lock.
+The returned object is a reference to the sequence lock.
+The sequence lock itself is allocated from the heap, independent of any Lua
+state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv seqref = ck.sequence.retain(cookie )
+Retain a reference to an existing sequence lock, referring to the sequence lock
+that produced
+.Fa cookie .
+.It Dv cookie = seqref:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+sequence lock referred to by
+.Va seqref .
+The cookie itself does not constitue a reference.
+.It Dv version = seqref:read_begin( )
+Wraps
+.Fn ck_sequence_read_begin .
+.It Dv retry = seqref:read_retry(version )
+Wraps
+.Fn ck_sequence_read_retry .
+.It Dv seqref:write_begin( )
+Wraps
+.Fn ck_sequence_write_begin .
+.It Dv seqref:write_end( )
+Wraps
+.Fn ck_sequence_write_end .
+.El
+.Sh SEE ALSO
+.Xr ck_sequence 3 ,
+.Xr ck 3lua
+.Sh AUTHORS
+.An Ryan Moeller

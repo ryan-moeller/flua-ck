@@ -1,0 +1,201 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 18, 2025
+.Dt CK.PR 3lua
+.Os
+.Sh NAME
+.Nm ck.pr
+.Nm ck.pr.fence
+.Nm ck.pr.fence.strict
+.Nm ck.pr.rtm
+.Nd Lua bindings for Concurrency Kit concurrency primitives
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv ck.pr.barrier( )
+.It Dv ck.pr.rfo(ptr )
+.It Dv ck.pr.stall( )
+.It Dv ck.pr.fence.atomic( )
+.It Dv ck.pr.fence.atomic_load( )
+.It Dv ck.pr.fence.atomic_store( )
+.It Dv ck.pr.fence.store_atomic( )
+.It Dv ck.pr.fence.load_atomic( )
+.It Dv ck.pr.fence.load_store( )
+.It Dv ck.pr.fence.store_load( )
+.It Dv ck.pr.fence.load( )
+.It Dv ck.pr.fence.store( )
+.It Dv ck.pr.fence.memory( )
+.It Dv ck.pr.fence.acquire( )
+.It Dv ck.pr.fence.release( )
+.It Dv ck.pr.fence.acqrel( )
+.It Dv ck.pr.fence.lock( )
+.It Dv ck.pr.fence.unlock( )
+.It Dv ck.pr.fence.strict.atomic( )
+.It Dv ck.pr.fence.strict.atomic_load( )
+.It Dv ck.pr.fence.strict.atomic_store( )
+.It Dv ck.pr.fence.strict.store_atomic( )
+.It Dv ck.pr.fence.strict.load_atomic( )
+.It Dv ck.pr.fence.strict.load_store( )
+.It Dv ck.pr.fence.strict.store_load( )
+.It Dv ck.pr.fence.strict.load( )
+.It Dv ck.pr.fence.strict.store( )
+.It Dv ck.pr.fence.strict.memory( )
+.It Dv ck.pr.fence.strict.acquire( )
+.It Dv ck.pr.fence.strict.release( )
+.It Dv ck.pr.fence.strict.acqrel( )
+.It Dv ck.pr.fence.strict.lock( )
+.It Dv ck.pr.fence.strict.unlock( )
+.It Dv status = ck.pr.rtm.begin( )
+.It Dv code = ck.pr.rtm.code(status )
+.It Dv ck.pr.rtm.end( )
+.It Dv ck.pr.rtm.abort(status )
+.It Dv supported = ck.pr.rtm.test( )
+.It Dv ck.pr.rtm.EXPLICIT
+.It Dv ck.pr.rtm.RETRY
+.It Dv ck.pr.rtm.CONFLICT
+.It Dv ck.pr.rtm.CAPACITY
+.It Dv ck.pr.rtm.DEBUG
+.It Dv ck.pr.rtm.NESTED
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.pr
+submodule implements low-level concurrency primitives, including memory fences,
+compiler barriers, cache-management hints, processor stall hints, and restricted
+transactional memory
+.Pq RTM .
+.Pp
+Avaliability of individual primitives depends on the architecture and on how
+Concurrency Kit was configured at build time.
+Not all operations are supported on all systems.
+.Bl -tag -width XXXX
+.It Dv ck.pr.barrier( )
+Wraps
+.Xr ck_pr_barrier 3 .
+.It Dv ck.pr.rfo(ptr )
+Wraps
+.Fn ck_pr_rfo .
+.Fa ptr
+is an arbitrary
+.Ft lightuserdata
+value.
+.It Dv ck.pr.stall( )
+Wraps
+.Xr ck_pr_stall 3 .
+.It Dv ck.pr.fence.atomic( )
+Wraps
+.Xr ck_pr_fence_atomic 3 .
+.It Dv ck.pr.fence.atomic_load( )
+Wraps
+.Xr ck_pr_fence_atomic_load 3 .
+.It Dv ck.pr.fence.atomic_store( )
+Wraps
+.Xr ck_pr_fence_atomic_store 3 .
+.It Dv ck.pr.fence.store_atomic( )
+Wraps
+.Xr ck_pr_fence_store_atomic 3 .
+.It Dv ck.pr.fence.load_atomic( )
+Wraps
+.Xr ck_pr_fence_load_atomic 3 .
+.It Dv ck.pr.fence.load_store( )
+Wraps
+.Xr ck_pr_fence_load_store 3 .
+.It Dv ck.pr.fence.store_load( )
+Wraps
+.Xr ck_pr_fence_store_load 3 .
+.It Dv ck.pr.fence.load( )
+Wraps
+.Xr ck_pr_fence_load 3 .
+.It Dv ck.pr.fence.store( )
+Wraps
+.Xr ck_pr_fence_store 3 .
+.It Dv ck.pr.fence.memory( )
+Wraps
+.Xr ck_pr_fence_memory 3 .
+.It Dv ck.pr.fence.acquire( )
+Wraps
+.Xr ck_pr_fence_acquire 3 .
+.It Dv ck.pr.fence.release( )
+Wraps
+.Xr ck_pr_fence_release 3 .
+.It Dv ck.pr.fence.acqrel( )
+Wraps
+.Xr ck_pr_fence_acqrel 3 .
+.It Dv ck.pr.fence.lock( )
+Wraps
+.Xr ck_pr_fence_lock 3 .
+.It Dv ck.pr.fence.unlock( )
+Wraps
+.Xr ck_pr_fence_unlock 3 .
+.It Dv ck.pr.fence.strict.atomic( )
+Wraps
+.Xr ck_pr_fence_atomic 3 .
+.It Dv ck.pr.fence.strict.atomic_load( )
+Wraps
+.Xr ck_pr_fence_atomic_load 3 .
+.It Dv ck.pr.fence.strict.atomic_store( )
+Wraps
+.Xr ck_pr_fence_atomic_store 3 .
+.It Dv ck.pr.fence.strict.store_atomic( )
+Wraps
+.Xr ck_pr_fence_store_atomic 3 .
+.It Dv ck.pr.fence.strict.load_atomic( )
+Wraps
+.Xr ck_pr_fence_load_atomic 3 .
+.It Dv ck.pr.fence.strict.load_store( )
+Wraps
+.Xr ck_pr_fence_load_store 3 .
+.It Dv ck.pr.fence.strict.store_load( )
+Wraps
+.Xr ck_pr_fence_store_load 3 .
+.It Dv ck.pr.fence.strict.load( )
+Wraps
+.Xr ck_pr_fence_load 3 .
+.It Dv ck.pr.fence.strict.store( )
+Wraps
+.Xr ck_pr_fence_store 3 .
+.It Dv ck.pr.fence.strict.memory( )
+Wraps
+.Xr ck_pr_fence_memory 3 .
+.It Dv ck.pr.fence.strict.acquire( )
+Wraps
+.Xr ck_pr_fence_acquire 3 .
+.It Dv ck.pr.fence.strict.release( )
+Wraps
+.Xr ck_pr_fence_release 3 .
+.It Dv ck.pr.fence.strict.acqrel( )
+Wraps
+.Xr ck_pr_fence_acqrel 3 .
+.It Dv ck.pr.fence.strict.lock( )
+Wraps
+.Xr ck_pr_fence_lock 3 .
+.It Dv ck.pr.fence.strict.unlock( )
+Wraps
+.Xr ck_pr_fence_unlock 3 .
+.It Dv status = ck.pr.rtm.begin( )
+Wraps
+.Fn ck_pr_rtm_begin .
+.It Dv code = ck.pr.rtm.code(status )
+Wraps
+.Fn CK_PR_RTM_CODE .
+.It Dv ck.pr.rtm.end( )
+Wraps
+.Fn ck_pr_rtm_end .
+.It Dv ck.pr.rtm.abort(status )
+Wraps
+.Fn ck_pr_rtm_abort .
+.It Dv supported = ck.pr.rtm.test( )
+Wraps
+.Fn ck_pr_rtm_test .
+.El
+.Sh SEE ALSO
+.Xr ck 3lua ,
+.Xr ck_pr 3 ,
+.Xr ck_pr_rtm 3
+.Sh AUTHORS
+.An Ryan Moeller

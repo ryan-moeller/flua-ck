@@ -36,22 +36,26 @@ in mind but does not depend on it.
 
 [flualibs]: https://github.com/ryan-moeller/flualibs
 
+The build system compiles the module for FreeBSD's base system Lua interpreter
+(flua).  It requires the FreeBSD sources in /usr/src or at a path specified by
+SRCTOP in the build environment.
+
+The sources themselves should not require anything flua-specific, so building
+for another Lua environment may be possible with some adjustments to the
+Makefile.
+
 ## Build Example
 
-The build system is set to compile the module for FreeBSD's base system Lua
-interpreter (flua):
+Building on FreeBSD with all dependencies in place is as simple as running make:
 
 ```
 $ make
 # make install # optional
 ```
 
-The sources themselves should not require anything flua-specific, so building
-for another Lua environment may be possible with some adjustments to the
-Makefile.
-
 ## TODO
 
 - improve tests and samples
 - improve README
+- EXAMPLES in manpages
 - implement missing CK features

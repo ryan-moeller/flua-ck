@@ -17,12 +17,13 @@ local ck = require('ck')
 The
 .Nm ck
 module is a collection of data structures built on top of Concurrency Kit.
-It provides an extensible serialization and deserialization interface for
-sharing Lua values between separate states running on different threads in the
-same process.
+It provides an extensible serialization and deserialization
+.Pq serde
+interface for sharing Lua values between separate states running on different
+threads in the same process.
 .Pp
 Several data structures are exposed for various use cases, such as constant
-references, mutable references, queues, stacks, etc.
+references, mutable references, queues, rings, etc.
 .Sh LIFETIMES
 Data structures in this module are allocated from the heap so are independent
 of any Lua state.

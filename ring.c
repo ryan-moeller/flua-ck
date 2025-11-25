@@ -194,7 +194,7 @@ l_ck_ring_spsc_dequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -291,7 +291,7 @@ l_ck_ring_mpmc_trydequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -310,7 +310,7 @@ l_ck_ring_mpmc_dequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -407,7 +407,7 @@ l_ck_ring_spmc_trydequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -426,7 +426,7 @@ l_ck_ring_spmc_dequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -523,7 +523,7 @@ l_ck_ring_mpsc_dequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static const struct luaL_Reg l_ck_ring_spsc_funcs[] = {

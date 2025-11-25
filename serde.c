@@ -329,6 +329,7 @@ loadclosure(lua_State *L, const void * _Nonnull p)
 
 	p = consume(p, sizeof(size), &size);
 	if (luaL_loadbufferx(L, p, size, NULL, "b") != LUA_OK) {
+		/* error message pushed by lua_load */
 		return (NULL);
 	}
 	return (p + size);
@@ -357,6 +358,7 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 
 	p = consume(p, sizeof(type), &type);
 	if (type < 0) {
+		lua_pushfstring(L, "invalid type (%d)", type);
 		return (NULL);
 	}
 	switch (type) {
@@ -434,6 +436,7 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 
 		p = consume(p, sizeof(size), &size);
 		if ((f = fmemopen(__DECONST(char *, p), size, "rbe")) == NULL) {
+			lua_pushfstring(L, "fmemopen: %s", strerror(errno));
 			return (NULL);
 		}
 		setvbuf(f, NULL, _IONBF, 0);
@@ -490,6 +493,7 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 		}
 		/* ..., serde, de, stream */
 		if ((error = lua_pcall(L, 1, 1, 0)) != LUA_OK) {
+			/* error message pushed by lua_pcall */
 			return (NULL);
 		}
 		/* ..., serde, deserialized */

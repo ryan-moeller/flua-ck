@@ -141,7 +141,7 @@ l_ck_fifo_spsc_dequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -386,7 +386,7 @@ l_ck_fifo_mpmc_dequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static int
@@ -411,7 +411,7 @@ l_ck_fifo_mpmc_trydequeue(lua_State *L)
 	lua_pushboolean(L, true);
 	ok = loadshared(L, v) != NULL;
 	free(v);
-	return (ok ? 2 : luaL_error(L, "serde error"));
+	return (ok ? 2 : lua_error(L));
 }
 
 static const struct luaL_Reg l_ck_fifo_spsc_funcs[] = {

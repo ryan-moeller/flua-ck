@@ -246,7 +246,7 @@ l_ck_shared_const_load(lua_State *L)
 	sharedp = checkcookie(L, 1, SHARED_CONST_METATABLE);
 
 	if (loadshared(L, sharedp->serialized->pointer) == NULL) {
-		return (luaL_error(L, "serde error"));
+		return (lua_error(L));
 	}
 	return (1);
 }
@@ -312,7 +312,7 @@ l_ck_shared_mut_load(lua_State *L)
 	error = loadshared(L, serialized->pointer) == NULL;
 	ck_hp_set(record, 0, NULL);
 	if (error) {
-		return (luaL_error(L, "serde error"));
+		return (lua_error(L));
 	}
 	return (1);
 }

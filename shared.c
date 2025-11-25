@@ -52,6 +52,7 @@ init_hp_domains(void)
 	    freeserialized);
 }
 
+#if 0 /* this fails if the main thread dies and doesn't close created threads */
 __attribute__((destructor(PRIO_HP)))
 static void
 fini_hp_domains(void)
@@ -65,6 +66,7 @@ fini_hp_domains(void)
 		free(record);
 	}
 }
+#endif
 
 #define HP_POINTERS_SIZE (sizeof(void *) * HP_NPOINTERS)
 /* Allocate the pointers immediately following the record for simplicity. */

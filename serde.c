@@ -155,7 +155,7 @@ l_ck_epoch_record_gc(lua_State *L)
 }
 
 int
-cache_serde(lua_State *L, int idx, serde_type_code *typep)
+cache_serde(lua_State *L, int idx, serde_type_code * _Nonnull typep)
 {
 	struct serdebuf sb;
 	ck_ht_entry_t entry;
@@ -300,17 +300,18 @@ success:
 	return (0);
 }
 
-static inline const void *
-consume(const void *p, size_t len, void *dst)
+static inline const void * _Nonnull
+consume(const void * _Nonnull p, size_t len, void * _Nonnull dst)
 {
 	memcpy(dst, p, len);
 	return (p + len);
 }
 
-static inline const void *loadsharedimpl(lua_State *, const void *, bool *);
+static inline const void *loadsharedimpl(lua_State *, const void * _Nonnull,
+    bool * _Nonnull);
 
 static inline const void *
-loadupvalues(lua_State *L, const void *p, bool *envp)
+loadupvalues(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 {
 	unsigned count;
 
@@ -322,13 +323,11 @@ loadupvalues(lua_State *L, const void *p, bool *envp)
 }
 
 static inline const void *
-loadclosure(lua_State *L, const void *p)
+loadclosure(lua_State *L, const void * _Nonnull p)
 {
 	size_t size;
 
-	if ((p = consume(p, sizeof(size), &size)) == NULL) {
-		return (NULL);
-	}
+	p = consume(p, sizeof(size), &size);
 	if (luaL_loadbufferx(L, p, size, NULL, "b") != LUA_OK) {
 		return (NULL);
 	}
@@ -352,7 +351,7 @@ setupvalues(lua_State *L, int bottom, bool env)
 }
 
 static inline const void *
-loadsharedimpl(lua_State *L, const void *p, bool *envp)
+loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 {
 	serde_type_code type;
 
@@ -423,9 +422,7 @@ loadsharedimpl(lua_State *L, const void *p, bool *envp)
 		if ((p = loadupvalues(L, p, &env)) == NULL) {
 			return (NULL);
 		}
-		if ((p = consume(p, sizeof(value), &value)) == NULL) {
-			return (NULL);
-		}
+		p = consume(p, sizeof(value), &value);
 		lua_pushcfunction(L, value);
 		setupvalues(L, bottom, env);
 		return (p);
@@ -506,7 +503,7 @@ loadsharedimpl(lua_State *L, const void *p, bool *envp)
 }
 
 const void *
-loadshared(lua_State *L, const void *p)
+loadshared(lua_State *L, const void * _Nonnull p)
 {
 	bool env;
 

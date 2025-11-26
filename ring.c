@@ -6,7 +6,6 @@
 
 #include <errno.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <ck_ring.h>
 
@@ -41,12 +40,12 @@ newring(lua_State *L, const char *metatable)
 	size = luaL_checkinteger(L, 1);
 
 	if ((ringp = malloc(sizeof(*ringp))) == NULL) {
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	ck_ring_init(&ringp->ring, size);
 	if ((ringp->buffer = malloc(sizeof(ck_ring_buffer_t) * size)) == NULL) {
 		free(ringp);
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	refcount_init(&ringp->refs);
 	return (new(L, ringp, metatable));
@@ -153,7 +152,7 @@ l_ck_ring_spsc_enqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -161,13 +160,11 @@ l_ck_ring_spsc_enqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if (!(enqueued = ck_ring_enqueue_spsc_size(&ringp->ring, ringp->buffer,
 	    v, &size))) {
@@ -250,7 +247,7 @@ l_ck_ring_mpmc_enqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -258,13 +255,11 @@ l_ck_ring_mpmc_enqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if (!(enqueued = ck_ring_enqueue_mpmc_size(&ringp->ring, ringp->buffer,
 	    v, &size))) {
@@ -366,7 +361,7 @@ l_ck_ring_spmc_enqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -374,13 +369,11 @@ l_ck_ring_spmc_enqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if (!(enqueued = ck_ring_enqueue_spmc_size(&ringp->ring, ringp->buffer,
 	    v, &size))) {
@@ -482,7 +475,7 @@ l_ck_ring_mpsc_enqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -490,13 +483,11 @@ l_ck_ring_mpsc_enqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if (!(enqueued = ck_ring_enqueue_mpsc_size(&ringp->ring, ringp->buffer,
 	    v, &size))) {

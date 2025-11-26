@@ -7,6 +7,7 @@
 #include <sys/param.h>
 #include <assert.h>
 #include <errno.h>
+#include <limits.h>
 #include <malloc_np.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -27,7 +28,6 @@
 #include "common.h"
 #include "serde.h"
 #include "serdebuf.h"
-#include "luaerror.h"
 
 #define CK_EPOCH_RECORD_METATABLE "ck_epoch_record_t"
 
@@ -134,7 +134,7 @@ register_epoch_record(lua_State *L)
 	 */
 	if ((record = ck_epoch_recycle(&serde_cache_epoch, NULL)) == NULL &&
 	    (record = malloc(sizeof(*record))) == NULL) {
-		luaL_error(L, "malloc: %s", strerror(ENOMEM));
+		fatal(L, "malloc", ENOMEM);
 	}
 	ck_epoch_register(&serde_cache_epoch, record, NULL);
 	thread_serde_cache_record = record;
@@ -319,6 +319,7 @@ loadupvalues(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 	while (count-- > 0 && (p = loadsharedimpl(L, p, envp)) != NULL) {
 		continue;
 	}
+	assert(p != NULL || lua_type(L, -1) == LUA_TSTRING);
 	return (p);
 }
 
@@ -330,6 +331,7 @@ loadclosure(lua_State *L, const void * _Nonnull p)
 	p = consume(p, sizeof(size), &size);
 	if (luaL_loadbufferx(L, p, size, NULL, "b") != LUA_OK) {
 		/* error message pushed by lua_load */
+		assert(lua_type(L, -1) == LUA_TSTRING);
 		return (NULL);
 	}
 	return (p + size);
@@ -408,9 +410,11 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 		bool env = false;
 
 		if ((p = loadupvalues(L, p, &env)) == NULL) {
+			assert(lua_type(L, -1) == LUA_TSTRING);
 			return (NULL);
 		}
 		if ((p = loadclosure(L, p)) == NULL) {
+			assert(lua_type(L, -1) == LUA_TSTRING);
 			return (NULL);
 		}
 		setupvalues(L, bottom, env);
@@ -422,6 +426,7 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 		bool env = false;
 
 		if ((p = loadupvalues(L, p, &env)) == NULL) {
+			assert(lua_type(L, -1) == LUA_TSTRING);
 			return (NULL);
 		}
 		p = consume(p, sizeof(value), &value);
@@ -436,7 +441,10 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 
 		p = consume(p, sizeof(size), &size);
 		if ((f = fmemopen(__DECONST(char *, p), size, "rbe")) == NULL) {
-			lua_pushfstring(L, "fmemopen: %s", strerror(errno));
+			char msg[NL_TEXTMAX];
+
+			strerror_r(errno, msg, sizeof(msg));
+			lua_pushfstring(L, "fmemopen: %s", msg);
 			return (NULL);
 		}
 		setvbuf(f, NULL, _IONBF, 0);
@@ -464,9 +472,11 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 			lua_createtable(L, 2, 0);
 			/* ..., stream, cache, serde */
 			if ((serde = loadshared(L, serde)) == NULL) {
+				assert(lua_type(L, -1) == LUA_TSTRING);
 				return (NULL);
 			}
 			if ((serde = loadshared(L, serde)) == NULL) {
+				assert(lua_type(L, -1) == LUA_TSTRING);
 				return (NULL);
 			}
 			/* ..., stream, cache, serde, ser, de */
@@ -494,6 +504,7 @@ loadsharedimpl(lua_State *L, const void * _Nonnull p, bool * _Nonnull envp)
 		/* ..., serde, de, stream */
 		if ((error = lua_pcall(L, 1, 1, 0)) != LUA_OK) {
 			/* error message pushed by lua_pcall */
+			assert(lua_type(L, -1) == LUA_TSTRING);
 			return (NULL);
 		}
 		/* ..., serde, deserialized */
@@ -512,7 +523,11 @@ loadshared(lua_State *L, const void * _Nonnull p)
 	bool env;
 
 	if ((p = loadsharedimpl(L, p, &env)) == NULL || env) {
-	     return (NULL);
+		if (env) {
+			lua_pushliteral(L, "invalid SERDE_ENV");
+		}
+		assert(lua_type(L, -1) == LUA_TSTRING);
+		return (NULL);
 	}
 	return (p);
 }

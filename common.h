@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <limits.h>
+#include <string.h>
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -85,6 +88,15 @@ newstream(lua_State *L, FILE *f)
 	luaL_setmetatable(L, LUA_FILEHANDLE);
 	stream->f = f;
 	stream->closef = closestream;
+}
+
+static inline int
+fatal(lua_State *L, const char *source, int error)
+{
+	char msg[NL_TEXTMAX];
+
+	strerror_r(error, msg, sizeof(msg));
+	return (luaL_error(L, "%s: %s", source, msg));
 }
 
 int luaopen_ck_shared(lua_State *L);

@@ -6,7 +6,6 @@
 
 #include <errno.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <ck_fifo.h>
 
@@ -35,11 +34,11 @@ l_ck_fifo_spsc_new(lua_State *L)
 	ck_fifo_spsc_entry_t *stubp;
 
 	if ((fifop = malloc(sizeof(*fifop))) == NULL) {
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	if ((stubp = malloc(sizeof(*stubp))) == NULL) {
 		free(fifop);
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	ck_fifo_spsc_init(&fifop->fifo, stubp);
 	refcount_init(&fifop->refs);
@@ -100,7 +99,7 @@ l_ck_fifo_spsc_enqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -108,18 +107,16 @@ l_ck_fifo_spsc_enqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if ((entry = ck_fifo_spsc_recycle(&fifop->fifo)) == NULL &&
 	    (entry = malloc(sizeof(*entry))) == NULL) {
 		free(v);
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	ck_fifo_spsc_enqueue(&fifop->fifo, entry, v);
 	return (0);
@@ -233,11 +230,11 @@ l_ck_fifo_mpmc_new(lua_State *L)
 	ck_fifo_mpmc_entry_t *stubp;
 
 	if ((fifop = malloc(sizeof(*fifop))) == NULL) {
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	if ((stubp = malloc(sizeof(*stubp))) == NULL) {
 		free(fifop);
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	ck_fifo_mpmc_init(&fifop->fifo, stubp);
 	refcount_init(&fifop->refs);
@@ -298,7 +295,7 @@ l_ck_fifo_mpmc_enqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -306,17 +303,15 @@ l_ck_fifo_mpmc_enqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if ((entry = malloc(sizeof(*entry))) == NULL) {
 		free(v);
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	ck_fifo_mpmc_enqueue(&fifop->fifo, entry, v);
 	return (0);
@@ -337,7 +332,7 @@ l_ck_fifo_mpmc_tryenqueue(lua_State *L)
 	luaL_checkany(L, 2);
 
 	if ((error = serdebuf_init(L, 2, &sb)) != 0) {
-		return (luaL_error(L, "serdebuf_init: %s", strerror(error)));
+		return (fatal(L, "serdebuf_init", error));
 	}
 	type = SERDE_ANY;
 	if ((error = serdebuf_serialize(L, 2, &sb, &type)) != 0) {
@@ -345,17 +340,15 @@ l_ck_fifo_mpmc_tryenqueue(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serdebuf_serialize: %s",
-		    strerror(error)));
+		return (fatal(L, "serdebuf_serialize", error));
 	}
 	if ((v = serdebuf_finalize(&sb, NULL)) == NULL) {
 		serdebuf_destroy(&sb);
-		return (luaL_error(L, "serdebuf_finalize: %s",
-		    strerror(ENOMEM)));
+		return (fatal(L, "serdebuf_finalize", ENOMEM));
 	}
 	if ((entry = malloc(sizeof(*entry))) == NULL) {
 		free(v);
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	if (!(enqueued = ck_fifo_mpmc_tryenqueue(&fifop->fifo, entry, v))) {
 		free(v); /* oof */

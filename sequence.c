@@ -17,7 +17,6 @@
 
 #include "common.h"
 #include "refcount.h"
-#include "luaerror.h"
 
 #define SEQUENCE_METATABLE "sequence"
 
@@ -32,7 +31,7 @@ l_ck_sequence_new(lua_State *L)
 	struct rcsequence *seqp;
 
 	if ((seqp = malloc(sizeof(*seqp))) == NULL) {
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	ck_sequence_init(&seqp->seqlock);
 	refcount_init(&seqp->refs);

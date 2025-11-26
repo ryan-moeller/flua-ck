@@ -85,7 +85,7 @@ register_hp_record(lua_State *L, ck_hp_t *domain)
 	 */
 	if ((record = ck_hp_recycle(domain)) == NULL) {
 		if ((record = malloc(RECORD_ALLOCATION_SIZE)) == NULL) {
-			luaL_error(L, "malloc: %s", strerror(ENOMEM));
+			fatal(L, "malloc", ENOMEM);
 		}
 		/*
 		 * The pointers follow record in the allocation and are
@@ -178,14 +178,14 @@ newshared(lua_State *L, const char *metatable)
 	luaL_checkany(L, 1);
 
 	if ((sharedp = malloc(sizeof(*sharedp))) == NULL) {
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	if ((error = serialize(L, 1, &sharedp->serialized)) != 0) {
 		free(sharedp);
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serialize: %s", strerror(error)));
+		return (fatal(L, "serialize", error));
 	}
 	refcount_init(&sharedp->refs);
 	return (new(L, sharedp, metatable));
@@ -343,7 +343,7 @@ l_ck_shared_mut_store(lua_State *L)
 		if (error < 0) {
 			return (lua_error(L));
 		}
-		return (luaL_error(L, "serialize: %s", strerror(error)));
+		return (fatal(L, "serialize", error));
 	}
 	oldp = ck_pr_fas_ptr(&sharedp->serialized, newp);
 	record = gethprecord(L, &serialized_hp_domain);
@@ -411,7 +411,7 @@ l_ck_shared_pr_new(lua_State *L)
 	luaL_checkany(L, 1);
 
 	if ((sharedp = malloc(sizeof(*sharedp))) == NULL) {
-		return (luaL_error(L, "malloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "malloc", ENOMEM));
 	}
 	switch ((sharedp->type = serde_type(L, 1))) {
 #define SERDE_PR_NEW_IMPL(CKT, CT, DT, FT, FIELD, TO, ST, ...) \
@@ -714,7 +714,7 @@ l_ck_shared_pr_md128_new(lua_State *L)
 	}
 
 	if ((sharedp = aligned_alloc(MD128_ALIGN, sizeof(*sharedp))) == NULL) {
-		return (luaL_error(L, "aligned_alloc: %s", strerror(ENOMEM)));
+		return (fatal(L, "aligned_alloc", ENOMEM));
 	}
 	if (s != NULL) {
 		assert(len <= sizeof(sharedp->c));

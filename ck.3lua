@@ -94,6 +94,7 @@ Do a thing:
 -- TODO
 .Ed
 .Sh SEE ALSO
+.Xr ck.ec 3lua ,
 .Xr ck.fifo 3lua ,
 .Xr ck.pr 3lua ,
 .Xr ck.ring 3lua ,

@@ -1,0 +1,130 @@
+.\"
+.\" Copyright (c) 2025 Ryan Moeller
+.\"
+.\" SPDX-License-Identifier: BSD-2-Clause
+.\"
+.Dd November 27, 2025
+.Dt CK.EC 3lua
+.Os
+.Sh NAME
+.Nm ck.ec
+.Nm ck.ec.ec32
+.Nm ck.ec.ec64
+.Nd Lua bindings for Concurrency Kit event counters
+.Sh SYNOPSIS
+.Bd -literal
+local ck = require('ck')
+.Pp
+.Bl -tag -width XXXX -compact
+.It Dv ck.ec.mp
+.It Dv ck.ec.sp
+.It Dv sec, nsec_or_err, code = ck.ec.deadline(mode[ , timeout_secs[ , timeout_nsecs ] ] )
+.It Dv ec32 = ck.ec.ec32.new(value )
+.It Dv ec32 = ck.ec.ec32.retain(cookie )
+.It Dv cookie = ec32:cookie( )
+.It Dv value = ec32:value( )
+.It Dv any = ec32:has_waiters( )
+.It Dv ec32:inc(mode )
+.It Dv value = ec32:add(mode , delta )
+.It Dv success = ec32:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
+.It Dv ec64 = ck.ec.ec64.new(value )
+.It Dv ec64 = ck.ec.ec64.retain(cookie )
+.It Dv cookie = ec64:cookie( )
+.It Dv value = ec64:value( )
+.It Dv any = ec64:has_waiters( )
+.It Dv ec64:inc(mode )
+.It Dv value = ec64:add(mode , delta )
+.It Dv success = ec64:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
+.El
+.Sh DESCRIPTION
+The
+.Nm ck.ec
+submodule implements 32-bit and 64-bit event counters.
+These event counters implement OS-level blocking and are easily integrated with
+lock-free protocols.
+Modes are provided for multiple and single producer operation.
+.Pp
+Avaliability of
+.Nm ck.ec.ec64
+and
+.Dv ck.ec.sp
+depends on the architecture and on how Concurrency Kit was configured at build
+time.
+Not all operations are supported on all systems.
+.Bl -tag -width XXXX
+.It Dv ck.ec.mp
+Multiple-producer
+.Fa mode .
+.It Dv ck.ec.sp
+Single-producer
+.Fa mode .
+.It Dv sec, nsec_or_err, code = ck.ec.deadline(mode[ , timeout_secs[ , timeout_nsecs ] ] )
+Wraps
+.Fn ck_ec_deadline .
+.It Dv ec32 = ck.ec.ec32.new(value )
+Allocate and initialize a new 32-bit reference-counted event counter.
+The returned object is a reference to the counter.
+The counter itself lives in storage allocated from the heap, independent of any
+Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv ec32 = ck.ec.ec32.retain(cookie )
+Retain a reference to an existing 32-bit event counter, referring to the counter
+that produced
+.Fa cookie.
+.It Dv cookie = ec32:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+32-bit event counter referred to by
+.Va ec32 .
+The cookie itself does not constitute a reference.
+.It Dv value = ec32:value( )
+Wraps
+.Fn ck_ec_value .
+.It Dv any = ec32:has_waiters( )
+Wraps
+.Fn ck_ec_has_waiters .
+.It Dv ec32:inc(mode )
+Wraps
+.Fn ck_ec_inc .
+.It Dv value = ec32:add(mode , delta )
+Wraps
+.Fn ck_ec_add .
+.It Dv success = ec32:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
+Wraps
+.Fn ck_ec_wait .
+.It Dv ec64 = ck.ec.ec64.new(value )
+Allocate and initialize a new 64-bit reference-counted event counter.
+The returned object is a reference to the counter.
+The counter itself lives in storage allocated from the heap, independent of any
+Lua state.
+It is freed to the heap when all references to it have been collected by GC.
+.It Dv ec64 = ck.ec.ec64.retain(cookie )
+Retain a reference to an existing 64-bit event counter, referring to the counter
+that produced
+.Fa cookie.
+.It Dv cookie = ec64:cookie( )
+Obtain a
+.Vt lightuserdata
+value that can be shared between threads and used to retain a reference to the
+64-bit event counter referred to by
+.It Dv value = ec64:value( )
+Wraps
+.Fn ck_ec_value .
+.It Dv any = ec64:has_waiters( )
+Wraps
+.Fn ck_ec_has_waiters .
+.It Dv ec64:inc(mode )
+Wraps
+.Fn ck_ec_inc .
+.It Dv value = ec64:add(mode , delta )
+Wraps
+.Fn ck_ec_add .
+.It Dv success = ec64:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
+Wraps
+.Fn ck_ec_wait .
+.El
+.Sh SEE ALSO
+.Xr ck 3lua
+.Sh AUTHORS
+.An Ryan Moeller

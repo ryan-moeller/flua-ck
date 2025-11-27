@@ -6,6 +6,7 @@ SHLIB_NAME=	ck.so
 SHLIBDIR=	${LIBDIR}/flua
 
 SRCS+=		lua_ck.c \
+		ec.c \
 		fifo.c \
 		pr.c \
 		ring.c \
@@ -22,6 +23,7 @@ CFLAGS+= \
 LDADD+=	-L/usr/local/lib -lck
 
 MAN=	ck.3lua \
+	ck.ec.3lua \
 	ck.fifo.3lua \
 	ck.pr.3lua \
 	ck.ring.3lua \

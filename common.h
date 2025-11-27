@@ -91,6 +91,18 @@ newstream(lua_State *L, FILE *f)
 }
 
 static inline int
+fail(lua_State *L, int error)
+{
+	char msg[NL_TEXTMAX];
+
+	strerror_r(error, msg, sizeof(msg));
+	luaL_pushfail(L);
+	lua_pushstring(L, msg);
+	lua_pushinteger(L, error);
+	return (3);
+}
+
+static inline int
 fatal(lua_State *L, const char *source, int error)
 {
 	char msg[NL_TEXTMAX];
@@ -99,9 +111,10 @@ fatal(lua_State *L, const char *source, int error)
 	return (luaL_error(L, "%s: %s", source, msg));
 }
 
-int luaopen_ck_shared(lua_State *L);
-int luaopen_ck_serde(lua_State *L);
-int luaopen_ck_sequence(lua_State *L);
+int luaopen_ck_ec(lua_State *L);
 int luaopen_ck_fifo(lua_State *L);
-int luaopen_ck_ring(lua_State *L);
 int luaopen_ck_pr(lua_State *L);
+int luaopen_ck_ring(lua_State *L);
+int luaopen_ck_sequence(lua_State *L);
+int luaopen_ck_serde(lua_State *L);
+int luaopen_ck_shared(lua_State *L);

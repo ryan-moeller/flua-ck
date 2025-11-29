@@ -250,9 +250,66 @@ l_ck_ec32_wait(lua_State *L)
 }
 
 static int
+ec_pred(const struct ck_ec_wait_state *state, struct timespec *deadline)
+{
+	lua_State *L = state->data;
+	int top, n, result;
+
+	top = lua_gettop(L);
+	lua_pushvalue(L, 4); /* ..., pred */
+	lua_pushvalue(L, 5); /* ..., pred, data */
+	lua_pushinteger(L, deadline->tv_sec);
+	lua_pushinteger(L, deadline->tv_nsec);
+	lua_pushinteger(L, state->now.tv_sec);
+	lua_pushinteger(L, state->now.tv_nsec);
+	if (lua_pcall(L, 5, LUA_MULTRET, 0) != LUA_OK) {
+		return (-1);
+	}
+	n = lua_gettop(L) - top;
+	result = lua_tointeger(L, -n);
+	switch (n) {
+	case 1:
+		break;
+	case 2:
+		deadline->tv_sec = lua_tointeger(L, -1);
+		break;
+	case 3:
+		deadline->tv_sec = lua_tointeger(L, -2);
+		deadline->tv_nsec = lua_tointeger(L, -1);
+		break;
+	default:
+		/* TODO: error message? */
+		return (-1);
+	}
+	lua_pop(L, n);
+	return (result);
+}
+
+static int
 l_ck_ec32_wait_pred(lua_State *L)
 {
-	return (luaL_error(L, "TODO"));
+	struct timespec deadline, *deadlinep;
+	struct rcec32 *ecp;
+	struct ck_ec_mode *mode;
+	uint32_t value;
+	int error;
+
+	ecp = checkcookie(L, 1, CK_EC32_METATABLE);
+	mode = checklightuserdata(L, 2);
+	value = luaL_checkinteger(L, 3);
+	luaL_argexpected(L, lua_isfunction(L, 4), 4, "function");
+	luaL_checkany(L, 5);
+	if (lua_isinteger(L, 6)) {
+		deadlinep = &deadline;
+		deadline.tv_sec = lua_tointeger(L, 6);
+		deadline.tv_nsec = luaL_optinteger(L, 7, 0);
+	} else {
+		deadlinep = NULL;
+	}
+
+	error = ck_ec32_wait_pred(&ecp->ec, mode, value, ec_pred, L, deadlinep);
+	lua_pushinteger(L, error);
+	return (1);
 }
 
 #ifdef CK_F_EC64
@@ -387,7 +444,28 @@ l_ck_ec64_wait(lua_State *L)
 static int
 l_ck_ec64_wait_pred(lua_State *L)
 {
-	return (luaL_error(L, "TODO"));
+	struct timespec deadline, *deadlinep;
+	struct rcec64 *ecp;
+	struct ck_ec_mode *mode;
+	uint64_t value;
+	int error;
+
+	ecp = checkcookie(L, 1, CK_EC64_METATABLE);
+	mode = checklightuserdata(L, 2);
+	value = luaL_checkinteger(L, 3);
+	luaL_argexpected(L, lua_isfunction(L, 4), 4, "function");
+	luaL_checkany(L, 5);
+	if (lua_isinteger(L, 6)) {
+		deadlinep = &deadline;
+		deadline.tv_sec = lua_tointeger(L, 6);
+		deadline.tv_nsec = luaL_optinteger(L, 7, 0);
+	} else {
+		deadlinep = NULL;
+	}
+
+	error = ck_ec64_wait_pred(&ecp->ec, mode, value, ec_pred, L, deadlinep);
+	lua_pushinteger(L, error);
+	return (1);
 }
 #endif
 

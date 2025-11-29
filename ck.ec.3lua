@@ -3,7 +3,7 @@
 .\"
 .\" SPDX-License-Identifier: BSD-2-Clause
 .\"
-.Dd November 27, 2025
+.Dd November 28, 2025
 .Dt CK.EC 3lua
 .Os
 .Sh NAME
@@ -27,6 +27,7 @@ local ck = require('ck')
 .It Dv ec32:inc(mode )
 .It Dv value = ec32:add(mode , delta )
 .It Dv success = ec32:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
+.It Dv result = ec32:wait_pred(mode , value , pred , data[ , deadline_sec[ , deadline_nsec ] ] )
 .It Dv ec64 = ck.ec.ec64.new(value )
 .It Dv ec64 = ck.ec.ec64.retain(cookie )
 .It Dv cookie = ec64:cookie( )
@@ -35,6 +36,7 @@ local ck = require('ck')
 .It Dv ec64:inc(mode )
 .It Dv value = ec64:add(mode , delta )
 .It Dv success = ec64:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
+.It Dv result = ec64:wait_pred(mode , value , pred , data[ , deadline_sec[ , deadline_nsec ] ] )
 .El
 .Sh DESCRIPTION
 The
@@ -93,6 +95,9 @@ Wraps
 .It Dv success = ec32:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
 Wraps
 .Fn ck_ec_wait .
+.It Dv result = ec32:wait_pred(mode , value , pred , data[ , deadline_sec[ , deadline_nsec ] ] )
+Wraps
+.Fn ck_ec_wait_pred .
 .It Dv ec64 = ck.ec.ec64.new(value )
 Allocate and initialize a new 64-bit reference-counted event counter.
 The returned object is a reference to the counter.
@@ -123,6 +128,9 @@ Wraps
 .It Dv success = ec64:wait(mode , value[ , deadline_sec[ , deadline_nsec ] ] )
 Wraps
 .Fn ck_ec_wait .
+.It Dv result = ec64:wait_pred(mode , value , pred , data[ , deadline_sec[ , deadline_nsec ] ] )
+Wraps
+.Fn ck_ec_wait_pred .
 .El
 .Sh SEE ALSO
 .Xr ck 3lua

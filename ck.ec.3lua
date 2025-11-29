@@ -3,7 +3,7 @@
 .\"
 .\" SPDX-License-Identifier: BSD-2-Clause
 .\"
-.Dd November 28, 2025
+.Dd November 29, 2025
 .Dt CK.EC 3lua
 .Os
 .Sh NAME
@@ -98,6 +98,12 @@ Wraps
 .It Dv result = ec32:wait_pred(mode , value , pred , data[ , deadline_sec[ , deadline_nsec ] ] )
 Wraps
 .Fn ck_ec_wait_pred .
+.Fa pred
+is a function with the signature
+.Dv result[ , deadline_sec[ , deadline_nsec ] ] = pred(data , iteration_deadline_sec , iteration_deadline_nsec , now_sec , now_nsec )
+used as a predicate before testing values on wake.
+A new deadline may be returned following the result to update the deadline.
+The result is immediately returned to the caller if non-zero.
 .It Dv ec64 = ck.ec.ec64.new(value )
 Allocate and initialize a new 64-bit reference-counted event counter.
 The returned object is a reference to the counter.
@@ -131,6 +137,12 @@ Wraps
 .It Dv result = ec64:wait_pred(mode , value , pred , data[ , deadline_sec[ , deadline_nsec ] ] )
 Wraps
 .Fn ck_ec_wait_pred .
+.Fa pred
+is a function with the signature
+.Dv result[ , deadline_sec[ , deadline_nsec ] ] = pred(data , iteration_deadline_sec , iteration_deadline_nsec , now_sec , now_nsec )
+used as a predicate before testing values on wake.
+A new deadline may be returned following the result to update the deadline.
+The result is immediately returned to the caller if non-zero.
 .El
 .Sh SEE ALSO
 .Xr ck 3lua

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Ryan Moeller
+ * Copyright (c) 2025-2026 Ryan Moeller
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -120,7 +120,7 @@ l_ck_ring_spsc_gc(lua_State *L)
 static int
 l_ck_ring_spsc_cookie(lua_State *L)
 {
-	checkcookie(L, 1, RING_SPSC_METATABLE);
+	checkcookieuv(L, 1, RING_SPSC_METATABLE);
 
 	return (1);
 }
@@ -215,7 +215,7 @@ l_ck_ring_mpmc_gc(lua_State *L)
 static int
 l_ck_ring_mpmc_cookie(lua_State *L)
 {
-	checkcookie(L, 1, RING_MPMC_METATABLE);
+	checkcookieuv(L, 1, RING_MPMC_METATABLE);
 
 	return (1);
 }
@@ -329,7 +329,7 @@ l_ck_ring_spmc_gc(lua_State *L)
 static int
 l_ck_ring_spmc_cookie(lua_State *L)
 {
-	checkcookie(L, 1, RING_SPMC_METATABLE);
+	checkcookieuv(L, 1, RING_SPMC_METATABLE);
 
 	return (1);
 }
@@ -443,7 +443,7 @@ l_ck_ring_mpsc_gc(lua_State *L)
 static int
 l_ck_ring_mpsc_cookie(lua_State *L)
 {
-	checkcookie(L, 1, RING_MPSC_METATABLE);
+	checkcookieuv(L, 1, RING_MPSC_METATABLE);
 
 	return (1);
 }

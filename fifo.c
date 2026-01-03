@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Ryan Moeller
+ * Copyright (c) 2025-2025 Ryan Moeller
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -80,7 +80,7 @@ l_ck_fifo_spsc_gc(lua_State *L)
 static int
 l_ck_fifo_spsc_cookie(lua_State *L)
 {
-	checkcookie(L, 1, FIFO_SPSC_METATABLE);
+	checkcookieuv(L, 1, FIFO_SPSC_METATABLE);
 
 	return (1);
 }
@@ -276,7 +276,7 @@ l_ck_fifo_mpmc_gc(lua_State *L)
 static int
 l_ck_fifo_mpmc_cookie(lua_State *L)
 {
-	checkcookie(L, 1, FIFO_MPMC_METATABLE);
+	checkcookieuv(L, 1, FIFO_MPMC_METATABLE);
 
 	return (1);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Ryan Moeller
+ * Copyright (c) 2025-2026 Ryan Moeller
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -113,12 +113,8 @@ l_ck_hp_record_gc(lua_State *L)
 static inline ck_hp_record_t *
 gethprecord(lua_State *L, ck_hp_t *domain)
 {
-	ck_hp_record_t *record;
-
 	lua_rawgetp(L, LUA_REGISTRYINDEX, domain);
-	record = checkcookie(L, -1, CK_HP_RECORD_METATABLE);
-	lua_pop(L, 2);
-	return (record);
+	return (checkcookie(L, -1, CK_HP_RECORD_METATABLE));
 }
 
 struct serialized {
@@ -233,7 +229,7 @@ l_ck_shared_const_gc(lua_State *L)
 static int
 l_ck_shared_const_cookie(lua_State *L)
 {
-	checkcookie(L, 1, SHARED_CONST_METATABLE);
+	checkcookieuv(L, 1, SHARED_CONST_METATABLE);
 
 	return (1);
 }
@@ -289,7 +285,7 @@ l_ck_shared_mut_gc(lua_State *L)
 static int
 l_ck_shared_mut_cookie(lua_State *L)
 {
-	checkcookie(L, 1, SHARED_MUT_METATABLE);
+	checkcookieuv(L, 1, SHARED_MUT_METATABLE);
 
 	return (1);
 }
@@ -457,7 +453,7 @@ l_ck_shared_pr_gc(lua_State *L)
 static int
 l_ck_shared_pr_cookie(lua_State *L)
 {
-	checkcookie(L, 1, SHARED_PR_METATABLE);
+	checkcookieuv(L, 1, SHARED_PR_METATABLE);
 
 	return (1);
 }
@@ -821,7 +817,7 @@ l_ck_shared_pr_md128_index(lua_State *L)
 static int
 l_ck_shared_pr_md128_cookie(lua_State *L)
 {
-	checkcookie(L, 1, SHARED_PR128_METATABLE);
+	checkcookieuv(L, 1, SHARED_PR128_METATABLE);
 
 	return (1);
 }

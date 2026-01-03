@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Ryan Moeller
+ * Copyright (c) 2025-2026 Ryan Moeller
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -48,16 +48,25 @@ checklightuserdata(lua_State *L, int idx)
 	return (lua_touserdata(L, idx));
 }
 
+static inline void
+checkcookieuv(lua_State *L, int idx, const char *metatable)
+{
+	luaL_checkudata(L, idx, metatable);
+	luaL_argcheck(L,
+	    lua_getiuservalue(L, idx, COOKIE) == LUA_TLIGHTUSERDATA, idx,
+	    "invalid cookie");
+}
+
 static inline void *
 checkcookie(lua_State *L, int idx, const char *metatable)
 {
 	void *cookie;
 
-	luaL_checkudata(L, idx, metatable);
+	checkcookieuv(L, idx, metatable);
 
-	lua_getiuservalue(L, idx, COOKIE);
 	cookie = lua_touserdata(L, -1);
 	luaL_argcheck(L, cookie != NULL, idx, "cookie expired");
+	lua_pop(L, 1);
 	return (cookie);
 }
 

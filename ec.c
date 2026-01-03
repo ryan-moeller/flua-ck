@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Ryan Moeller
+ * Copyright (c) 2025-2026 Ryan Moeller
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -169,7 +169,7 @@ l_ck_ec32_gc(lua_State *L)
 static int
 l_ck_ec32_cookie(lua_State *L)
 {
-	checkcookie(L, 1, CK_EC32_METATABLE);
+	checkcookieuv(L, 1, CK_EC32_METATABLE);
 
 	return (1);
 }
@@ -361,7 +361,7 @@ l_ck_ec64_gc(lua_State *L)
 static int
 l_ck_ec64_cookie(lua_State *L)
 {
-	checkcookie(L, 1, CK_EC64_METATABLE);
+	checkcookieuv(L, 1, CK_EC64_METATABLE);
 
 	return (1);
 }

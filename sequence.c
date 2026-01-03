@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Ryan Moeller
+ * Copyright (c) 2025-2026 Ryan Moeller
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
@@ -65,7 +65,7 @@ l_ck_sequence_gc(lua_State *L)
 static int
 l_ck_sequence_cookie(lua_State *L)
 {
-	checkcookie(L, 1, SEQUENCE_METATABLE);
+	checkcookieuv(L, 1, SEQUENCE_METATABLE);
 
 	return (1);
 }

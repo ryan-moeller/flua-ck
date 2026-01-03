@@ -1,15 +1,15 @@
--- Copyright (c) 2025 Ryan Moeller
+-- Copyright (c) 2025-2026 Ryan Moeller
 --
 -- SPDX-License-Identifier: BSD-2-Clause
 
 local bd <const> = require('bsddialog')
 local ck <const> = require('ck')
-local clock <const> = require('clock')
+local time <const> = require('time')
 local posix <const> = require('posix')
 local pthread <const> = require('pthread')
-local sysctl <const> = require('sysctl')
+local sysctl <const> = require('sys.sysctl')
 
-local ncpu <const> = sysctl('hw.ncpu'):value()
+local ncpu <const> = sysctl.sysctl('hw.ncpu'):value()
 
 local workq <const> = assert(ck.ring.spmc.new(64))
 local workqc <const> = workq:cookie()
@@ -262,7 +262,7 @@ local failed = 0
 local function runnable()
 	return finished + failed < #tasks
 end
-local last = clock.gettime(clock.REALTIME)
+local last = time.clock_gettime(time.CLOCK_REALTIME)
 while runnable() do
 	::continue::
 	local ec <const> = status_nq_ec:value()
@@ -302,7 +302,7 @@ while runnable() do
 		end
 		failed = failed + 1
 	end
-	local now <const> = clock.gettime(clock.REALTIME)
+	local now <const> = time.clock_gettime(time.CLOCK_REALTIME)
 	-- Only update once per second unless this is the final pass.
 	if (now - last) < 1 and runnable() then
 		goto continue
@@ -321,7 +321,8 @@ while runnable() do
 	local mainperc <const> = (active + (finished + failed) * 100) // #tasks
 	assert(bd.mixedgauge(conf, text, 0, 0, mainperc, minibars) == bd.OK)
 end
-clock.nanosleep(clock.REALTIME, 0, 1) -- one second pause on last screen
+-- one second pause on last screen
+time.clock_nanosleep(time.CLOCK_REALTIME, 0, 1)
 bd.clear(1)
 local text <const> = ('\n%d/%d finished, %d failed\n')
     :format(finished, #tasks, failed)
